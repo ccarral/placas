@@ -1,36 +1,44 @@
 function merged = mergeMat(source, dest)
-% Actualiza matriz dest con contenidos de source
 
-[Ms,Ns] = size(source);
-[Md,Nd] = size(dest);
-assert(Ns==Nd);
+    % Por cada k  en source, verificar si está en dest
 
-for is = 1:Ms
-    currentKey = source(is,1);
-   
-    % Checar si la clave actual está en destino
-    if keyInMat(currentKey,dest) == 0
-        % Si no está, concatenar vector
-        dest = cat(1,dest,source(is,:));
-        
-    else
-        % Si está, sumar a valores previos
-        
-        % Buscar posición de clave en dest
-        for id=1:Md
-            if dest(id,1) == currentKey
-                for jd=2:Nd
-                    dest(id,jd) = dest(id,jd) + source(is,jd);
-                end
-            end
+    nRows = height(source);
+
+    for i=1:nRows
+        rowInSource = source(i,:);
+        currentKey = rowInSource.key;
+        rowsInDest = dest(strcmp(dest.key,currentKey),:);
+        n = height(rowsInDest);
+
+        if n > 0
+            % Si existe un registro, actualizar con valores de source
+
+            rowsInDest.hu_1 = rowsInDest.hu_1 + rowInSource.hu_1;
+            rowsInDest.hu_2 = rowsInDest.hu_2 + rowInSource.hu_2;
+            rowsInDest.hu_3 = rowsInDest.hu_3 + rowInSource.hu_3;
+            rowsInDest.hu_4 = rowsInDest.hu_4 + rowInSource.hu_4;
+            rowsInDest.hu_5 = rowsInDest.hu_5 + rowInSource.hu_5;
+            rowsInDest.hu_6 = rowsInDest.hu_6 + rowInSource.hu_6;
+            rowsInDest.hu_7 = rowsInDest.hu_7 + rowInSource.hu_7;
+
+            rowsInDest.Area = rowsInDest.Area + rowInSource.Area;
+            rowsInDest.MajorAxisLength = rowsInDest.MajorAxisLength + rowInSource.MajorAxisLength;
+            rowsInDest.MinorAxisLength = rowsInDest.MinorAxisLength + rowInSource.MinorAxisLength;
+
+            rowsInDest.Count = rowsInDest.Count + rowInSource.Count;
+
+            dest(strcmp(dest.key,currentKey),:) = rowsInDest;
+
             
+
+        else
+            % Otro, agregar nueva fila con valores
+            dest = [dest;rowInSource];
         end
-        
+
     end
-end
-
-merged = dest;
-
+    
+    merged = dest;
 
 end
 

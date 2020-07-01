@@ -5,4 +5,3 @@ W = readtable('arch.txt');
 
 
 
-

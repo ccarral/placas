@@ -1,17 +1,29 @@
-function [A, S, smallest, biggest, y_prom] = EntrenarImagenPaso1(I)
+function [A, smallest, biggest, y_prom] = EntrenarImagenPaso1(I)
 %   Regresa un mapa de símbolos con sus propiedades
 
     smallest = 999999;
     biggest = 0;
     
+    sizesFileID = fopen('data/acceptable_sizes.bin');
+
+    
     y_sum = 0;
 
     % Matriz de suma de características
-    A = 0;
-    
-    % Matriz de Conteo de mediciones
-    % El número de filas en S es el mismo que en A.
-    S = 0;
+    key={};
+    hu_1=[];
+    hu_2=[];
+    hu_3=[];
+    hu_4=[];
+    hu_5=[];
+    hu_6=[];
+    hu_7=[];
+    Area=[];
+    MajorAxisLength=[];
+    MinorAxisLength=[];
+    Count = [];
+    A = table(key,hu_1,hu_2,hu_3,hu_4,hu_5,hu_6,hu_7,Area,MajorAxisLength,MinorAxisLength,Count);
+   
     
     figure(1),
     imshow(I,[]);
@@ -25,8 +37,13 @@ function [A, S, smallest, biggest, y_prom] = EntrenarImagenPaso1(I)
     
     for i=1:n
         R = L==i;
+        
+        area_p = regionprops(R,'Area');
+        area = area_p.Area;
+        
+        
         figure(2),
-        imshowpair(L,L==i,'montage');
+            imshowpair(L,L==i,'montage');
         
         while 1
             try
@@ -40,7 +57,7 @@ function [A, S, smallest, biggest, y_prom] = EntrenarImagenPaso1(I)
         
         if k ~= 0
             P = Propiedades(R);
-            % Si la región es válida, insertar o actualizar A y S
+            % Si la región es válida, insertar o actualizar A
             
             % Actualizar biggest y smallest
             area = P(8);
@@ -55,38 +72,24 @@ function [A, S, smallest, biggest, y_prom] = EntrenarImagenPaso1(I)
             
             if area < smallest
                 smallest = area;
+            
             end
             
-            if A == 0
-                A = [k P(1) P(2) P(3) P(4) P(5) P(6) P(7) P(8) P(9) P(10)];
-                S = [k 1];
+            if keyInMat(k,A)
+                % Si ya existe en la tabla, actualizar valores
+                A = updateRow(k,A,P);
+                
             else
-                % Si el valor ya está en la matriz, actualizar
-                if keyInMat(k,A) == 1
-                    [M,N] = size(A);
-                    for i=1:M
-                        if A(i,1) == k
-                            for j=2:N
-                                A(i,j) = A(i,j) + P(j-1);
-                            end
-                            S(i,2)  = S(i,2) + 1;
-                        end
-                    end
-                else
-                    % Si el valor no está en A, concatenar a A y S
-                    newVecA = [k P(1) P(2) P(3) P(4) P(5) P(6) P(7) P(8) P(9) P(10)];
-                    A = cat(1,A,newVecA);
-                    
-                    newVecS = [k 1];
-                    S = cat(1,S,newVecS);
-                end
+                % Si no existe en la tabla, insertar nueva fila
+                newRow = {k , P(1),P(2),P(3),P(4),P(5),P(6),P(7),P(8),P(9),P(10),1};
+                A = [A;newRow];
             end
         end
         
  
     end
 
-    num_keys = length(A(1));
+    num_keys = height(A);
     
     y_prom = y_sum/num_keys;
 

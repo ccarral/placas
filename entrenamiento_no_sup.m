@@ -1,6 +1,6 @@
 %%%%% Script de entrenamiento no supervisado %%%%%%
 
-BIN_FILE_CARACT = 'data/caracteristicas.bin';
+DAT_FILE_CARACT = 'data/caracteristicas.dat';
 BIN_FILE_BIGGEST_SMALLEST = 'data/acceptable_sizes.bin';
 BIN_FILE_Y_PROM = 'data/y_prom.bin';
 
@@ -12,31 +12,46 @@ BIN_FILE_Y_PROM = 'data/y_prom.bin';
 D = dir('*.jpg');
 
 
-[A,S,smallest,biggest, y_prom] = EntrenarPaso1(D);
+[A,smallest,biggest, y_prom] = EntrenarPaso1(D);
 
 sizes = [smallest biggest];
 
 % Obtener los valores de A que se escribirán en el archivo.
 
-[M,N] = size(A);
-
-Afile = zeros(M,N);
-
-for i=1:M
-    for j=1:N
-        Afile(i,j) = A(i,j)/S(i,2);
-    end
-end
-
-AfileID = fopen(BIN_FILE_CARACT,'w');
-
 sizesFileID = fopen(BIN_FILE_BIGGEST_SMALLEST,'w');
 
 y_promID = fopen(BIN_FILE_Y_PROM,'w');
 
+% Obtener tabla con valores promediados
+
+Aprom = A(:,1:11);
+
+numRowsA = height(Aprom);
+
+for i=1:numRowsA
+    count = A(1,12).Count;
+    
+    currentRow = A(i,1:11);
+
+    currentRow.hu_1 = currentRow.hu_1/count;
+    currentRow.hu_2 = currentRow.hu_2/count;
+    currentRow.hu_3 = currentRow.hu_3/count;
+    currentRow.hu_4 = currentRow.hu_4/count;
+    currentRow.hu_5 = currentRow.hu_5/count;
+    currentRow.hu_6 = currentRow.hu_6/count;
+    currentRow.hu_7 = currentRow.hu_7/count;
 
 
-fwrite(AfileID, Afile);
+    currentRow.Area = currentRow.Area/count;
+    currentRow.MajorAxisLength = currentRow.MajorAxisLength/count;
+    currentRow.MinorAxisLength = currentRow.MinorAxisLength/count;
+
+    Aprom(i,:) = currentRow;
+
+end
+
+
+writetable(Aprom,DAT_FILE_CARACT);
 fwrite(sizesFileID,sizes);
 fwrite(y_promID, y_prom);
 
