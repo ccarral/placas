@@ -3,23 +3,24 @@ function merged = mergeMat(source, dest)
 
 [Ms,Ns] = size(source);
 [Md,Nd] = size(dest);
+assert(Ns==Nd);
 
-for i = 1:Ms
-    currentKey = source(i,1);
-    
+for is = 1:Ms
+    currentKey = source(is,1);
+   
     % Checar si la clave actual está en destino
     if keyInMat(currentKey,dest) == 0
         % Si no está, concatenar vector
-        cat(1,dest,source(i));
+        dest = cat(1,dest,source(is,:));
         
     else
         % Si está, sumar a valores previos
         
-        % Buscar posición de clave
-        for k=1:Md
-            if dest(k,1) == currentKey
-                for l=2:Nd
-                    dest(k,l) = dest(k,l) + source(k,l);
+        % Buscar posición de clave en dest
+        for id=1:Md
+            if dest(id,1) == currentKey
+                for jd=2:Nd
+                    dest(id,jd) = dest(id,jd) + source(is,jd);
                 end
             end
             

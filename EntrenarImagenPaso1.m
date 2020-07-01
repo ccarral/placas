@@ -1,9 +1,10 @@
-function [A, S, smallest, biggest] = EntrenarImagenPaso1(fname)
+function [A, S, smallest, biggest, y_prom] = EntrenarImagenPaso1(I)
 %   Regresa un mapa de símbolos con sus propiedades
 
     smallest = 999999;
     biggest = 0;
     
+    y_sum = 0;
 
     % Matriz de suma de características
     A = 0;
@@ -12,9 +13,6 @@ function [A, S, smallest, biggest] = EntrenarImagenPaso1(fname)
     % El número de filas en S es el mismo que en A.
     S = 0;
     
-    
-    I = imread(fname);
-    
     figure(1),
     imshow(I,[]);
     
@@ -22,14 +20,23 @@ function [A, S, smallest, biggest] = EntrenarImagenPaso1(fname)
     BW2 = Limpiar(BW);
     
     [L, n] = Etiquetar(BW2);
-    figure(2),
-    imshow(L,[]);
+    %figure(2),
+    %imshow(L,[]);
     
     for i=1:n
         R = L==i;
-        figure(3),
-        imshow(L==i);
-        k = input('Si es una región válida, digite el símbolo.\nCaso contrario, presione 0 y ENTER\n#>');
+        figure(2),
+        imshowpair(L,L==i,'montage');
+        
+        while 1
+            try
+                k = input('Si es una región válida, digite el símbolo.\nCaso contrario, presione 0 y ENTER\n#>');
+                break;
+            catch
+                fprintf('Error! Intentalo de nuevo')
+            end
+        end
+        
         
         if k ~= 0
             P = Propiedades(R);
@@ -37,6 +44,10 @@ function [A, S, smallest, biggest] = EntrenarImagenPaso1(fname)
             
             % Actualizar biggest y smallest
             area = P(8);
+            
+            y = P(11);
+            
+            y_sum = y_sum + y;
             
             if area > biggest
                 biggest = area;
@@ -75,6 +86,9 @@ function [A, S, smallest, biggest] = EntrenarImagenPaso1(fname)
  
     end
 
+    num_keys = length(A(1));
+    
+    y_prom = y_sum/num_keys;
 
 
 end

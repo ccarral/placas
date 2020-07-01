@@ -6,12 +6,14 @@ function limpia = Limpiar(BW)
      
      % Letras son blancas
      X = imclose(~BW,SE);
+     
      A = imfill(X,'holes');
     %B = imfill(~A,'holes');
     
 
     
-    SE2 = strel('square',3);
+    SE2 = strel('square',4);
+    %  letras blancas  <- letras negras, fondo blando
     limpia = ~imerode(~A,SE2);
     
     
